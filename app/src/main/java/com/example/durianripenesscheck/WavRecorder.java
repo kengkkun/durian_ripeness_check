@@ -25,7 +25,7 @@ public class WavRecorder {
 
     public void prepare(String outputFile, int sampleRate) {
         recordFile = new File(outputFile);
-        if (recordFile.exists() && recordFile.isFile()) {
+        if (!recordFile.exists() && !recordFile.isFile()) {
             int channel = AudioFormat.CHANNEL_IN_MONO;
             try {
                 bufferSize = AudioRecord.getMinBufferSize(sampleRate,
@@ -53,7 +53,33 @@ public class WavRecorder {
                 recorder.startRecording();
             }
         } else {
-            Log.e(LOG_TAG, "prepare() failed");
+//            Log.e(LOG_TAG, "prepare() failed");
+            int channel = AudioFormat.CHANNEL_IN_MONO;
+            try {
+                bufferSize = AudioRecord.getMinBufferSize(sampleRate,
+                        channel,
+                        AudioFormat.ENCODING_PCM_16BIT);
+                if (bufferSize == AudioRecord.ERROR || bufferSize == AudioRecord.ERROR_BAD_VALUE) {
+                    bufferSize = AudioRecord.getMinBufferSize(sampleRate,
+                            channel,
+                            AudioFormat.ENCODING_PCM_16BIT);
+                }
+                recorder = new AudioRecord(
+                        MediaRecorder.AudioSource.MIC,
+                        sampleRate,
+                        channel,
+                        AudioFormat.ENCODING_PCM_16BIT,
+                        bufferSize
+                );
+            } catch (IllegalArgumentException e) {
+                Log.e("sampleRate = " + sampleRate + " channel = " + channel + " bufferSize = " + bufferSize, String.valueOf(e));
+                if (recorder != null) {
+                    recorder.release();
+                }
+            }
+            if (recorder != null && recorder.getState() == AudioRecord.STATE_INITIALIZED) {
+                recorder.startRecording();
+            }
 
         }
     }

@@ -62,8 +62,10 @@ public class MainActivity extends AppCompatActivity {
         mLabel = findViewById(R.id.label);
         plabel = findViewById(R.id.pLabel);
 
-        outputFile = Objects.requireNonNull(getExternalCacheDir()).getAbsolutePath();
+        outputFile = Objects.requireNonNull(getCacheDir()).getAbsolutePath();
         outputFile += "/wav_recorded.wav";
+
+
 
         requestMicrophonePermission();
 
