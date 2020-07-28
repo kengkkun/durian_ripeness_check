@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private ProgressDialog mProgress;
     private static final int REQUEST_RECORD_AUDIO = 13;
 
     private static final String LOG_TAG = "Record_log";
@@ -56,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         pbTimer.setVisibility(View.INVISIBLE);
 
         mTime = findViewById(R.id.time);
+
+        mProgress = new ProgressDialog(this);
 
 
         final ToggleButton mRecordBtn = findViewById(R.id.record_bt);
@@ -122,7 +125,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void uploadFile(final String filename, final String time_name) {
-
+        mProgress.setMessage("กำลังประมวลผล...");
+        mProgress.show();
 //        Uri uri = Uri.fromFile(new File(filename));
         File file = new File(filename);
         file = file.getAbsoluteFile();
@@ -145,6 +149,9 @@ public class MainActivity extends AppCompatActivity {
                     plabel.setText("Code: " + response.code());
                     return;
                 }
+
+
+                mProgress.dismiss();
                 String content = "";
 
                 assert response.body() != null;
